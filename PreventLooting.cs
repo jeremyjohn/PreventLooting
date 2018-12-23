@@ -10,7 +10,7 @@ using System.Linq;
 
 namespace Oxide.Plugins
 {
-    [Info("PreventLooting", "CaseMan", "1.7.0", ResourceId = 2469)]
+    [Info("PreventLooting", "CaseMan", "1.8.0", ResourceId = 2469)]
     [Description("Prevent looting by other players")]
 
     class PreventLooting : RustPlugin
@@ -29,6 +29,7 @@ namespace Oxide.Plugins
 		bool CanLootBackpack;
 		bool CanLootBackpackPlugin;
 		bool CanPickup;
+		bool IncludeZoneMode;
 		bool UseZoneManager;
 		bool UseExcludeEntities;
 		bool UseCupboard;
@@ -100,7 +101,8 @@ namespace Oxide.Plugins
 			Config["CanLootBackpack"] = CanLootBackpack = GetConfig("CanLootBackpack", false);
 			Config["CanLootBackpackPlugin"] = CanLootBackpackPlugin = GetConfig("CanLootBackpackPlugin", false);
 			Config["CanPickup"] = CanPickup = GetConfig("CanPickup", false);
-			Config["UseZoneManager"] = UseZoneManager = GetConfig("UseZoneManager", false);			
+			Config["UseZoneManager"] = UseZoneManager = GetConfig("UseZoneManager", false);
+			Config["ZoneManagerIncludeMode"] = IncludeZoneMode = GetConfig("ZoneManagerIncludeMode", false);
 			Config["ZoneID"] = ZoneID = GetConfig("ZoneID", new List<object>{"12345678"});
 			Config["UseExcludeEntities"] = UseExcludeEntities = GetConfig("UseExcludeEntities", true);
 			Config["ExcludeEntities"] = ExcludeEntities = GetConfig("ExcludeEntities", new List<object>{"mailbox.deployed"});
@@ -214,10 +216,24 @@ namespace Oxide.Plugins
 			if(permission.UserHasPermission(player.userID.ToString(), AdmPerm)) return true;
 			if(UseZoneManager && ZoneManager != null)
 			{
-				foreach(var zoneID in ZoneID)
-				{
-					if((bool)ZoneManager.Call("isPlayerInZone", zoneID, player)) return true;				
-				}
+				if((string[])ZoneManager.Call("GetPlayerZoneIDs", player) != null)
+				{					
+					if(!IncludeZoneMode)
+					{					
+						foreach(var zoneID in ZoneID)
+						{
+							if((bool)ZoneManager.Call("isPlayerInZone", zoneID, player)) return true;				
+						}
+					}
+					else
+					{
+						foreach(var zoneID in ZoneID)
+						{
+							if((bool)ZoneManager.Call("isPlayerInZone", zoneID, player)) return false;				
+						}		
+						return true;
+					}
+				}				
 			}
 			if(entity is SupplyDrop) return true;
 			return false;

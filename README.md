@@ -67,7 +67,9 @@ If you want to share an entity with other players, you can use chat commands. To
 
 **UseZoneManager** - enable to use the Zone Manager to exclude the plugin from working in a certain zone
 
-**ZoneID** - list of zones in which the plugin will be disabled
+**ZoneManagerIncludeMode** - enable to exclude plugin in all zones and use "ZoneID" list to include the plugin to working in a certain zone
+
+**ZoneID** - list of zones in which the plugin will be included or excluded
 
 ### Default Configuration
 
@@ -90,6 +92,7 @@ If you want to share an entity with other players, you can use chat commands. To
   "UsePermission": false,
   "UseTeams": true,
   "UseZoneManager": false,
+  "ZoneManagerIncludeMode": false,
   "ZoneID": [
     "12345678"
   ]
