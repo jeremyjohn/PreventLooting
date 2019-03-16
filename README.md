@@ -53,7 +53,11 @@ If you want to share an entity with other players, you can use chat commands. To
 
 **UseCupboard** - enable to share entities if cupboard authorization, in cupboard radius
 
+**UseCupboardInclude** - list of types to loot with parameter UseCupboard. Types available: storage, player, corpse, backpack, backpackplugin. The default value is recommended. Note: with "UseCupboardInclude" values: player, corpse, backpack, backpackplugin - allowing loot only when both player auth in cupboard!
+
 **UseOnlyInCupboardRange** - enable to use the plugin only in the coverage area of cupboard
+
+**UseOnlyInCupboardRangeInclude** -  list of types to loot with parameter UseOnlyInCupboardRange. Types available: storage, player, corpse, backpack, backpackplugin. The default value is recommended.
 
 **ExcludeEntities** - list of excludes
 
@@ -86,16 +90,22 @@ If you want to share an entity with other players, you can use chat commands. To
     "mailbox.deployed"
   ],
   "UseCupboard": false,
+  "UseCupboardInclude": [
+    "storage"
+  ],
   "UseExcludeEntities": true,
   "UseFriendsAPI": true,
   "UseOnlyInCupboardRange": false,
+  "UseOnlyInCupboardRangeInclude": [
+    "storage"
+  ],
   "UsePermission": false,
   "UseTeams": true,
   "UseZoneManager": false,
-  "ZoneManagerIncludeMode": false,
   "ZoneID": [
     "12345678"
-  ]
+  ],
+  "ZoneManagerIncludeMode": false
 }
 ```
 

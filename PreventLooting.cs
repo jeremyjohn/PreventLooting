@@ -10,7 +10,7 @@ using System.Linq;
 
 namespace Oxide.Plugins
 {
-    [Info("PreventLooting", "CaseMan", "1.8.0", ResourceId = 2469)]
+    [Info("PreventLooting", "CaseMan", "1.9.0", ResourceId = 2469)]
     [Description("Prevent looting by other players")]
 
     class PreventLooting : RustPlugin
@@ -33,7 +33,9 @@ namespace Oxide.Plugins
 		bool UseZoneManager;
 		bool UseExcludeEntities;
 		bool UseCupboard;
-		bool UseOnlyInCupboardRange;
+		List<object> UseCupboardInclude;
+		bool UseOnlyInCupboardRange;		
+		List<object> UseOnlyInCupboardRangeInclude;
 		bool WipeDetected = false;
 		List<object> ZoneID;
 		List<object> ExcludeEntities;
@@ -107,7 +109,10 @@ namespace Oxide.Plugins
 			Config["UseExcludeEntities"] = UseExcludeEntities = GetConfig("UseExcludeEntities", true);
 			Config["ExcludeEntities"] = ExcludeEntities = GetConfig("ExcludeEntities", new List<object>{"mailbox.deployed"});
 			Config["UseCupboard"] = UseCupboard = GetConfig("UseCupboard", false);
+			Config["UseCupboardInclude"] = UseCupboardInclude = GetConfig("UseCupboardInclude", new List<object>{"storage"});
 			Config["UseOnlyInCupboardRange"] = UseOnlyInCupboardRange = GetConfig("UseOnlyInCupboardRange", false);
+			Config["UseOnlyInCupboardRangeInclude"] = UseOnlyInCupboardRangeInclude = GetConfig("UseOnlyInCupboardRangeInclude", new List<object>{"storage"});
+
 			SaveConfig();
         }		
 		#endregion		
@@ -182,6 +187,8 @@ namespace Oxide.Plugins
 			if(IsFriend(corpse.playerSteamID, player.userID)) return null;
 			if(UsePermission && !permission.UserHasPermission(corpse.playerSteamID.ToString(), CorpsePerm)) return null;
 			if(corpse.playerSteamID < 76561197960265728L || player.userID == corpse.playerSteamID) return null;
+			if(UseCupboard || UseOnlyInCupboardRange)
+					if(CheckAuthCupboard(corpse, player)) return null;
 			SendReply(player, lang.GetMessage("OnTryLootCorpse", this, player.UserIDString));	
 			return true;
 		}		
@@ -194,11 +201,13 @@ namespace Oxide.Plugins
 				if(IsFriend(container.playerSteamID, player.userID)) return null;
 				if(UsePermission && !permission.UserHasPermission(container.playerSteamID.ToString(), BackpackPerm)) return null;
 				if(container.playerSteamID < 76561197960265728L || player.userID == container.playerSteamID) return null;
+				if(UseCupboard || UseOnlyInCupboardRange)
+					if(CheckAuthCupboard(container, player)) return null;
 				SendReply(player, lang.GetMessage("OnTryLootBackpack", this, player.UserIDString));	
 				return true;
 			}
 			return null;
-		}	
+		}
 		private object CanLootPlayer(BasePlayer target, BasePlayer player)
 		{
 			if(CanLootPl) return null;
@@ -206,6 +215,8 @@ namespace Oxide.Plugins
 			if(IsFriend(target.userID, player.userID)) return null;
 			if(UsePermission && !permission.UserHasPermission(target.userID.ToString(), PlayerPerm)) return null;
 			if(player.userID == target.userID) return null;
+			if(UseCupboard || UseOnlyInCupboardRange)
+					if(CheckAuthCupboard(target, player)) return null;
 			SendReply(player, lang.GetMessage("OnTryLootPlayer", this, player.UserIDString));
 			return false;
 		}	
@@ -306,7 +317,7 @@ namespace Oxide.Plugins
 			{	
 				VendingMachine shopFront = entity as VendingMachine;
 				if(shopFront.PlayerInfront(player)) return true;
-				return false;		
+				return false;	
 			}
 			return false;
 		}
@@ -348,12 +359,48 @@ namespace Oxide.Plugins
 			success = hit.GetEntity();
 			return true; 
         }
-		bool CheckAuthCupboard(BaseEntity entity, BasePlayer player)
+		bool CheckAuthCupboard(object ent, BasePlayer player)
 		{		
+			BaseEntity entity = ent as BaseEntity;
+			ulong ownerid = 0;
+			string type = "";
+			if(ent is StorageContainer)
+			{
+				type = "storage";
+			}				
+			else if(ent is BasePlayer)
+			{
+				ownerid = (ent as BasePlayer).userID;
+				type = "player";
+			}				
+			else if(ent is LootableCorpse)
+			{
+				ownerid = (ent as LootableCorpse).playerSteamID;
+				type = "corpse";
+			}			
+			else if(ent is DroppedItemContainer)
+			{
+				ownerid = (ent as DroppedItemContainer).playerSteamID;
+				if(entity.name.Contains("item_drop_backpack")) type = "backpack";
+				else if (entity.name.Contains("droppedbackpack")) type = "backpackplugin";
+			}				
 			BuildingPrivlidge bprev = player.GetBuildingPrivilege(new OBB(entity.transform.position, entity.transform.rotation, entity.bounds));
-			if(UseOnlyInCupboardRange && bprev == null) return true;
-			if(!UseOnlyInCupboardRange && bprev == null) return false;
-			if(UseCupboard && bprev.IsAuthed(player)) return true;
+			if(UseOnlyInCupboardRangeInclude.Contains(type) && bprev == null)	
+			{				
+				if(UseOnlyInCupboardRange) return true;
+				if(!UseOnlyInCupboardRange) return false;
+			}
+			if(UseCupboard && UseCupboardInclude.Contains(type) && bprev != null)	
+			{					
+				if(ownerid != 0)
+				{
+					if(bprev.IsAuthed(player) && bprev.authorizedPlayers.Any<ProtoBuf.PlayerNameID>((ProtoBuf.PlayerNameID x) => x.userid == ownerid)) return true;
+				}
+				else
+				{
+					if(bprev.IsAuthed(player)) return true;
+				}				
+			}
 			return false;
 		}
 		private IPlayer CheckPlayer(BasePlayer player, string[] args)
@@ -720,7 +767,7 @@ namespace Oxide.Plugins
 						if(bprev == null) SendReply(player, "<color=red>"+lang.GetMessage("EntNoPrevent", this, player.UserIDString)+"</color>\n");
 						else SendReply(player, "<color=lime>"+lang.GetMessage("EntPrevent", this, player.UserIDString)+"</color>\n");		
 					}	
-					else SendReply(player, "<color=lime"+lang.GetMessage("EntPrevent", this, player.UserIDString)+"</color>\n");	
+					else SendReply(player, "<color=lime>"+lang.GetMessage("EntPrevent", this, player.UserIDString)+"</color>\n");	
 				}
 			}
 			else
