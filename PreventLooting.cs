@@ -10,7 +10,7 @@ using System.Linq;
 
 namespace Oxide.Plugins
 {
-    [Info("PreventLooting", "CaseMan", "1.9.0", ResourceId = 2469)]
+    [Info("PreventLooting", "CaseMan", "1.9.1", ResourceId = 2469)]
     [Description("Prevent looting by other players")]
 
     class PreventLooting : RustPlugin
@@ -364,7 +364,7 @@ namespace Oxide.Plugins
 			BaseEntity entity = ent as BaseEntity;
 			ulong ownerid = 0;
 			string type = "";
-			if(ent is StorageContainer)
+			if(ent is StorageContainer || ent is MiningQuarry)
 			{
 				type = "storage";
 			}				
