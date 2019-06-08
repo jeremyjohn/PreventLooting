@@ -10,7 +10,7 @@ using System.Linq;
 
 namespace Oxide.Plugins
 {
-    [Info("PreventLooting", "CaseMan", "1.9.1", ResourceId = 2469)]
+    [Info("PreventLooting", "CaseMan", "1.9.2", ResourceId = 2469)]
     [Description("Prevent looting by other players")]
 
     class PreventLooting : RustPlugin
@@ -409,12 +409,12 @@ namespace Oxide.Plugins
 			if(playerlist.Count > 1)
 			{
 				
-				var message="<color=red>"+lang.GetMessage("MultiplePlayerFind", this, player.UserIDString)+"</color>\n";
+				var message="<color=#FF0000>"+lang.GetMessage("MultiplePlayerFind", this, player.UserIDString)+"</color>\n";
 				int i=0;
 				foreach(var pl in playerlist)
 				{
 					i++;
-					message+= string.Format("{0}. <color=orange>{1}</color> ({2})\n\r", i, pl.Name, pl.Id);
+					message+= string.Format("{0}. <color=#FFA500>{1}</color> ({2})\n\r", i, pl.Name, pl.Id);
 				}
 				SendReply(player, message);
                 return null;
@@ -422,7 +422,7 @@ namespace Oxide.Plugins
 			var player0 = covalence.Players.FindPlayer(args[0]);
 			if(player0==null) 
 			{
-				SendReply(player, string.Format(lang.GetMessage("PlayerNotFound", this, player.UserIDString), "<color=orange>"+args[0]+"</color>")); 
+				SendReply(player, string.Format(lang.GetMessage("PlayerNotFound", this, player.UserIDString), "<color=#FFA500>"+args[0]+"</color>")); 
 				return null;
 			}
 			return player0;
@@ -479,7 +479,7 @@ namespace Oxide.Plugins
 							data.Share.Add(ID);
 						}
 						if(ID==0) SendReply(player, lang.GetMessage("ShareAll", this, player.UserIDString));
-						else SendReply(player, string.Format(lang.GetMessage("SharePlayer", this, player.UserIDString), "<color=orange>"+player0.Name+"</color>"));
+						else SendReply(player, string.Format(lang.GetMessage("SharePlayer", this, player.UserIDString), "<color=#FFA500>"+player0.Name+"</color>"));
 					}	
 					else 
 					{
@@ -488,13 +488,13 @@ namespace Oxide.Plugins
 							if(storedData.Data[entity.net.ID].Share.Contains(ID))
 							{
 								if(ID==0) SendReply(player, lang.GetMessage("HasShareAll", this, player.UserIDString));
-								else SendReply(player, string.Format(lang.GetMessage("HasSharePlayer", this, player.UserIDString), "<color=orange>"+player0.Name+"</color>"));
+								else SendReply(player, string.Format(lang.GetMessage("HasSharePlayer", this, player.UserIDString), "<color=#FFA500>"+player0.Name+"</color>"));
 							}						
 							else
 							{
 								storedData.Data[entity.net.ID].Share.Add(ID);
 								if(ID==0) SendReply(player, lang.GetMessage("ShareAll", this, player.UserIDString));
-								else SendReply(player, string.Format(lang.GetMessage("SharePlayer", this, player.UserIDString), "<color=orange>"+player0.Name+"</color>"));
+								else SendReply(player, string.Format(lang.GetMessage("SharePlayer", this, player.UserIDString), "<color=#FFA500>"+player0.Name+"</color>"));
 							}
 						}
 						else
@@ -503,14 +503,14 @@ namespace Oxide.Plugins
 							if(storedData.Data[entity.net.ID].Quarry[childentity.ShortPrefabName].Contains(ID))
 							{
 								if(ID==0) SendReply(player, lang.GetMessage("HasShareAll", this, player.UserIDString));
-								else SendReply(player, string.Format(lang.GetMessage("HasSharePlayer", this, player.UserIDString), "<color=orange>"+player0.Name+"</color>"));
+								else SendReply(player, string.Format(lang.GetMessage("HasSharePlayer", this, player.UserIDString), "<color=#FFA500>"+player0.Name+"</color>"));
 							}						
 							else
 							{
 								if(storedData.Data[entity.net.ID].Quarry.ContainsKey(childentity.ShortPrefabName)) storedData.Data[entity.net.ID].Quarry[childentity.ShortPrefabName].Add(ID);
 								else storedData.Data[entity.net.ID].Quarry.Add(childentity.ShortPrefabName, new List<ulong>{ID});
 								if(ID==0) SendReply(player, lang.GetMessage("ShareAll", this, player.UserIDString));
-								else SendReply(player, string.Format(lang.GetMessage("SharePlayer", this, player.UserIDString), "<color=orange>"+player0.Name+"</color>"));
+								else SendReply(player, string.Format(lang.GetMessage("SharePlayer", this, player.UserIDString), "<color=#FFA500>"+player0.Name+"</color>"));
 							}
 						}	
 					}
@@ -566,14 +566,14 @@ namespace Oxide.Plugins
 							if(!storedData.Data[entity.net.ID].Share.Contains(ID))
 							{
 								if(ID==0) SendReply(player, lang.GetMessage("HasUnShareAll", this, player.UserIDString));	
-								else SendReply(player, string.Format(lang.GetMessage("HasUnSharePlayer", this, player.UserIDString), "<color=orange>"+player0.Name+"</color>"));	
+								else SendReply(player, string.Format(lang.GetMessage("HasUnSharePlayer", this, player.UserIDString), "<color=#FFA500>"+player0.Name+"</color>"));	
 							}
 							else
 							{
 								storedData.Data[entity.net.ID].Share.Remove(ID);
 								if(storedData.Data[entity.net.ID].Share.Count==0) storedData.Data.Remove(entity.net.ID);
 								if(ID==0) SendReply(player, lang.GetMessage("WasUnShareAll", this, player.UserIDString));
-								else SendReply(player, string.Format(lang.GetMessage("WasUnSharePlayer", this, player.UserIDString), "<color=orange>"+player0.Name+"</color>"));
+								else SendReply(player, string.Format(lang.GetMessage("WasUnSharePlayer", this, player.UserIDString), "<color=#FFA500>"+player0.Name+"</color>"));
 							}
 						}
 						else
@@ -586,14 +586,14 @@ namespace Oxide.Plugins
 							if(!storedData.Data[entity.net.ID].Quarry[childentity.ShortPrefabName].Contains(ID))
 							{
 								if(ID==0) SendReply(player, lang.GetMessage("HasUnShareAll", this, player.UserIDString));	
-								else SendReply(player, string.Format(lang.GetMessage("HasUnSharePlayer", this, player.UserIDString), "<color=orange>"+player0.Name+"</color>"));	
+								else SendReply(player, string.Format(lang.GetMessage("HasUnSharePlayer", this, player.UserIDString), "<color=#FFA500>"+player0.Name+"</color>"));	
 							}
 							else
 							{
 								storedData.Data[entity.net.ID].Quarry[childentity.ShortPrefabName].Remove(ID);
 								if(storedData.Data[entity.net.ID].Quarry[childentity.ShortPrefabName].Count==0) storedData.Data[entity.net.ID].Quarry.Remove(childentity.ShortPrefabName);
 								if(ID==0) SendReply(player, lang.GetMessage("WasUnShareAll", this, player.UserIDString));
-								else SendReply(player, string.Format(lang.GetMessage("WasUnSharePlayer", this, player.UserIDString), "<color=orange>"+player0.Name+"</color>"));
+								else SendReply(player, string.Format(lang.GetMessage("WasUnSharePlayer", this, player.UserIDString), "<color=#FFA500>"+player0.Name+"</color>"));
 							}
 						}
 						Sharelist(player);
@@ -643,12 +643,12 @@ namespace Oxide.Plugins
 								SendReply(player, lang.GetMessage("HasShareAllList", this, player.UserIDString));
 								return;
 							}	
-							var message="<color=yellow>"+lang.GetMessage("ListShare", this, player.UserIDString)+"</color>\n";
+							var message="<color=#FFFF00>"+lang.GetMessage("ListShare", this, player.UserIDString)+"</color>\n";
 							int i=0;
 							foreach(var share in storedData.Data[entity.net.ID].Share)
 							{
 								i++;
-								message+= string.Format("{0}. <color=green>{1}</color> ({2})\n\r", i, covalence.Players.FindPlayer(share.ToString()).Name, covalence.Players.FindPlayer(share.ToString()).Id);
+								message+= string.Format("{0}. <color=#00FF00>{1}</color> ({2})\n\r", i, covalence.Players.FindPlayer(share.ToString()).Name, covalence.Players.FindPlayer(share.ToString()).Id);
 							}	
 							SendReply(player, message);
 						}
@@ -664,12 +664,12 @@ namespace Oxide.Plugins
 								SendReply(player, lang.GetMessage("HasShareAllList", this, player.UserIDString));
 								return;
 							}	
-							var message="<color=yellow>"+lang.GetMessage("ListShare", this, player.UserIDString)+"</color>\n";
+							var message="<color=#FFFF00>"+lang.GetMessage("ListShare", this, player.UserIDString)+"</color>\n";
 							int i=0;
 							foreach(var share in storedData.Data[entity.net.ID].Quarry[childentity.ShortPrefabName])
 							{
 								i++;
-								message+= string.Format("{0}. <color=green>{1}</color> ({2})\n\r", i, covalence.Players.FindPlayer(share.ToString()).Name, covalence.Players.FindPlayer(share.ToString()).Id);
+								message+= string.Format("{0}. <color=#00FF00>{1}</color> ({2})\n\r", i, covalence.Players.FindPlayer(share.ToString()).Name, covalence.Players.FindPlayer(share.ToString()).Id);
 							}	
 							SendReply(player, message);
 						}	
@@ -764,10 +764,10 @@ namespace Oxide.Plugins
 					if(UseOnlyInCupboardRange)
 					{
 						BuildingPrivlidge bprev = player.GetBuildingPrivilege(new OBB(entity.transform.position, entity.transform.rotation, entity.bounds));
-						if(bprev == null) SendReply(player, "<color=red>"+lang.GetMessage("EntNoPrevent", this, player.UserIDString)+"</color>\n");
-						else SendReply(player, "<color=lime>"+lang.GetMessage("EntPrevent", this, player.UserIDString)+"</color>\n");		
+						if(bprev == null) SendReply(player, "<color=#FF0000>"+lang.GetMessage("EntNoPrevent", this, player.UserIDString)+"</color>\n");
+						else SendReply(player, "<color=#CCFF00>"+lang.GetMessage("EntPrevent", this, player.UserIDString)+"</color>\n");		
 					}	
-					else SendReply(player, "<color=lime>"+lang.GetMessage("EntPrevent", this, player.UserIDString)+"</color>\n");	
+					else SendReply(player, "<color=#CCFF00>"+lang.GetMessage("EntPrevent", this, player.UserIDString)+"</color>\n");	
 				}
 			}
 			else
