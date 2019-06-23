@@ -10,7 +10,7 @@ using System.Linq;
 
 namespace Oxide.Plugins
 {
-    [Info("PreventLooting", "CaseMan", "1.9.2", ResourceId = 2469)]
+    [Info("PreventLooting", "CaseMan", "1.9.3", ResourceId = 2469)]
     [Description("Prevent looting by other players")]
 
     class PreventLooting : RustPlugin
@@ -285,7 +285,7 @@ namespace Oxide.Plugins
 			}
 			return null;
 		}	
-		private object CanPickupEntity(BaseCombatEntity ent, BasePlayer player)
+		private object CanPickupEntity(BasePlayer player, BaseCombatEntity ent)
 		{
 			if(CanPickup) return null;
 			BaseEntity entity = ent as BaseEntity;
