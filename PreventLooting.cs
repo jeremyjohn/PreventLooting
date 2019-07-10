@@ -10,7 +10,7 @@ using System.Linq;
 
 namespace Oxide.Plugins
 {
-    [Info("PreventLooting", "CaseMan", "1.9.3", ResourceId = 2469)]
+    [Info("PreventLooting", "CaseMan", "1.10.1", ResourceId = 2469)]
     [Description("Prevent looting by other players")]
 
     class PreventLooting : RustPlugin
@@ -29,6 +29,7 @@ namespace Oxide.Plugins
 		bool CanLootBackpack;
 		bool CanLootBackpackPlugin;
 		bool CanPickup;
+		bool CanOvenToggle;
 		bool IncludeZoneMode;
 		bool UseZoneManager;
 		bool UseExcludeEntities;
@@ -103,6 +104,7 @@ namespace Oxide.Plugins
 			Config["CanLootBackpack"] = CanLootBackpack = GetConfig("CanLootBackpack", false);
 			Config["CanLootBackpackPlugin"] = CanLootBackpackPlugin = GetConfig("CanLootBackpackPlugin", false);
 			Config["CanPickup"] = CanPickup = GetConfig("CanPickup", false);
+			Config["CanOvenToggle"] = CanOvenToggle = GetConfig("CanOvenToggle", false);
 			Config["UseZoneManager"] = UseZoneManager = GetConfig("UseZoneManager", false);
 			Config["ZoneManagerIncludeMode"] = IncludeZoneMode = GetConfig("ZoneManagerIncludeMode", false);
 			Config["ZoneID"] = ZoneID = GetConfig("ZoneID", new List<object>{"12345678"});
@@ -147,6 +149,7 @@ namespace Oxide.Plugins
 				["NoPermission"]="You do not have enough rights to execute this command!",
 				["EntPrevent"] = "This entity is protected!",
 				["EntNoPrevent"] = "This entity is not protected!",	
+				["OnTryOnOff"] = "You can not turn on or off this entity because it is not yours!",
             }, this);
 			lang.RegisterMessages(new Dictionary<string, string>
             {
@@ -175,6 +178,7 @@ namespace Oxide.Plugins
 				["NoPermission"]="У вас недостаточно прав для выполнения этой команды!",
 				["EntPrevent"]="Этот предмет защищен от воровства!",
 				["EntNoPrevent"]="Этот предмет не защищен от воровства!",
+				["OnTryOnOff"] = "Вы не можете включить или выключить этот объект, потому что он вам не принадлежит!",
             }, this, "ru");
 
         }
@@ -285,6 +289,21 @@ namespace Oxide.Plugins
 			}
 			return null;
 		}	
+		private object OnOvenToggle(BaseOven oven, BasePlayer player)
+		{
+			if(CanOvenToggle) return null;
+			BaseEntity entity = oven as BaseEntity;
+			if(CheckHelper(player, entity)) return null;
+			if(entity.OwnerID == player.userID) return null;
+			if(entity.OwnerID != 0 && entity.OwnerID != player.userID && !IsFriend(entity.OwnerID, player.userID)) 
+			{	
+				if(UseCupboard || UseOnlyInCupboardRange)
+					if(CheckAuthCupboard(entity, player)) return null;
+				SendReply(player, lang.GetMessage("OnTryOnOff", this, player.UserIDString));
+				return false;
+			}	
+			return null;
+		}
 		private object CanPickupEntity(BasePlayer player, BaseCombatEntity ent)
 		{
 			if(CanPickup) return null;
@@ -292,6 +311,8 @@ namespace Oxide.Plugins
 			if(CheckHelper(player, entity)) return null;
 			if(entity.OwnerID != 0 && entity.OwnerID != player.userID && !IsFriend(entity.OwnerID, player.userID)) 
 			{	
+				if(UseCupboard || UseOnlyInCupboardRange)
+					if(CheckAuthCupboard(entity, player)) return null;
 				SendReply(player, lang.GetMessage("OnTryPickup", this, player.UserIDString));
 				return false;
 			}	
@@ -364,6 +385,8 @@ namespace Oxide.Plugins
 			BaseEntity entity = ent as BaseEntity;
 			ulong ownerid = 0;
 			string type = "";
+			if(ent is BaseCombatEntity)
+				if((ent as BaseCombatEntity).pickup.enabled) type = "pickup";
 			if(ent is StorageContainer || ent is MiningQuarry)
 			{
 				type = "storage";
