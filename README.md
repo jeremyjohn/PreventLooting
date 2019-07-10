@@ -51,7 +51,7 @@ If you want to share an entity with other players, you can use chat commands. To
 
 **CanPickup** - allow pickup elements of construction and decoration (doors, windows, decor, etc)
 
-**CanOvenToggle - allow turn on or off ovens (furnaces, lamps, etc)
+**CanOvenToggle** - allow turn on or off ovens (furnaces, lamps, etc)
 
 **UseCupboard** - enable to share entities if cupboard authorization, in cupboard radius
 
