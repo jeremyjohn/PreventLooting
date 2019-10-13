@@ -39,6 +39,8 @@ If you want to share an entity with other players, you can use chat commands. To
 
 **AdminCanLoot** - allows the administrator to open any entity
 
+**CanAuthorizeCupboard** - allows authorize in cupboards
+
 **CanLootCorpse** - allows loot corpses
 
 **CanLootEntity** - allows loot entities
@@ -82,6 +84,7 @@ If you want to share an entity with other players, you can use chat commands. To
 ```json
 {
   "AdminCanLoot": true,
+  "CanAuthorizeCupboard": true,
   "CanLootBackpack": false,
   "CanLootBackpackPlugin": false,
   "CanLootCorpse": false,

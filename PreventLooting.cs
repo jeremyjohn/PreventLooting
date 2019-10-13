@@ -10,7 +10,7 @@ using System.Linq;
 
 namespace Oxide.Plugins
 {
-    [Info("PreventLooting", "CaseMan", "1.10.1", ResourceId = 2469)]
+    [Info("PreventLooting", "CaseMan", "1.11.0", ResourceId = 2469)]
     [Description("Prevent looting by other players")]
 
     class PreventLooting : RustPlugin
@@ -23,6 +23,7 @@ namespace Oxide.Plugins
 		bool UseFriendsAPI;
 		bool UseTeams;
 		bool AdminCanLoot;
+		bool CanAuthCB;
 		bool CanLootPl;
 		bool CanLootCorpse;
 		bool CanLootEnt;
@@ -98,6 +99,7 @@ namespace Oxide.Plugins
 			Config["UseFriendsAPI"] = UseFriendsAPI = GetConfig("UseFriendsAPI", true);
 			Config["UseTeams"] = UseTeams = GetConfig("UseTeams", true);
 			Config["AdminCanLoot"] = AdminCanLoot = GetConfig("AdminCanLoot", true);
+			Config["CanAuthorizeCupboard"] = CanAuthCB = GetConfig("CanAuthorizeCupboard", true);
 			Config["CanLootPlayer"] = CanLootPl = GetConfig("CanLootPlayer", false);
 			Config["CanLootCorpse"] = CanLootCorpse = GetConfig("CanLootCorpse", false);
 			Config["CanLootEntity"] = CanLootEnt = GetConfig("CanLootEntity", false);
@@ -150,6 +152,7 @@ namespace Oxide.Plugins
 				["EntPrevent"] = "This entity is protected!",
 				["EntNoPrevent"] = "This entity is not protected!",	
 				["OnTryOnOff"] = "You can not turn on or off this entity because it is not yours!",
+				["OnTryAuthCB"] = "You can not authorize in cupboard because it is not yours!",
             }, this);
 			lang.RegisterMessages(new Dictionary<string, string>
             {
@@ -179,6 +182,7 @@ namespace Oxide.Plugins
 				["EntPrevent"]="Этот предмет защищен от воровства!",
 				["EntNoPrevent"]="Этот предмет не защищен от воровства!",
 				["OnTryOnOff"] = "Вы не можете включить или выключить этот объект, потому что он вам не принадлежит!",
+				["OnTryAuthCB"] = "Вы не можете авторизоваться в чужом шкафу, потому что он вам не принадлежит!",
             }, this, "ru");
 
         }
@@ -281,7 +285,7 @@ namespace Oxide.Plugins
 				}	
 			}
 			if(entity.OwnerID != player.userID && entity.OwnerID != 0)
-			{								
+			{			
 				if(UseCupboard || UseOnlyInCupboardRange)
 					if(CheckAuthCupboard(entity, player)) return null;
 				SendReply(player, lang.GetMessage("OnTryLootEntity", this, player.UserIDString));
@@ -316,6 +320,18 @@ namespace Oxide.Plugins
 				SendReply(player, lang.GetMessage("OnTryPickup", this, player.UserIDString));
 				return false;
 			}	
+			return null;
+		}
+		private object OnCupboardAuthorize(BuildingPrivlidge privilege, BasePlayer player)
+		{
+			if(CanAuthCB) return null;
+			BaseEntity entity = privilege as BaseEntity;
+			if(CheckHelper(player, entity)) return null;
+			if(entity.OwnerID != 0 && entity.OwnerID != player.userID && !IsFriend(entity.OwnerID, player.userID)) 
+			{	
+				SendReply(player, lang.GetMessage("OnTryAuthCB", this, player.UserIDString));
+				return false;
+			}
 			return null;
 		}
 		private BaseEntity CheckParent(BaseEntity entity)
