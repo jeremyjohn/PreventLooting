@@ -10,7 +10,7 @@ using System.Linq;
 
 namespace Oxide.Plugins
 {
-    [Info("PreventLooting", "CaseMan", "1.11.0", ResourceId = 2469)]
+    [Info("PreventLooting", "CaseMan", "1.11.1", ResourceId = 2469)]
     [Description("Prevent looting by other players")]
 
     class PreventLooting : RustPlugin
@@ -378,6 +378,7 @@ namespace Oxide.Plugins
 			if(UseTeams)
 			{
 				BasePlayer player = BasePlayer.FindByID(playerid);
+				if(player == null) return false;
 				if (player.currentTeam != (long)0)
 				{
 					RelationshipManager.PlayerTeam playerTeam = RelationshipManager.Instance.FindTeam(player.currentTeam);
