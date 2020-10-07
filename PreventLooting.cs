@@ -10,7 +10,7 @@ using System.Linq;
 
 namespace Oxide.Plugins
 {
-    [Info("PreventLooting", "CaseMan", "1.11.1", ResourceId = 2469)]
+    [Info("PreventLooting", "CaseMan", "1.11.2", ResourceId = 2469)]
     [Description("Prevent looting by other players")]
 
     class PreventLooting : RustPlugin
@@ -190,6 +190,7 @@ namespace Oxide.Plugins
 		#region Hooks
 		private object CanLootEntity(BasePlayer player, LootableCorpse corpse)
 		{
+			if(corpse == null || player == null) return null;
 			if(CanLootCorpse) return null;
 			if(CheckHelper(player, corpse as BaseEntity)) return null;
 			if(IsFriend(corpse.playerSteamID, player.userID)) return null;
@@ -202,6 +203,7 @@ namespace Oxide.Plugins
 		}		
 		private object CanLootEntity(BasePlayer player, DroppedItemContainer container)
 		{
+			if(container == null || player == null) return null;
 			if(CanLootBackpack && CanLootBackpackPlugin) return null;
 			if(CheckHelper(player, container as BaseEntity)) return null;
 			if(((container as BaseEntity).name.Contains("item_drop_backpack") && !CanLootBackpack) || ((container as BaseEntity).name.Contains("droppedbackpack") && !CanLootBackpackPlugin))
@@ -218,6 +220,7 @@ namespace Oxide.Plugins
 		}
 		private object CanLootPlayer(BasePlayer target, BasePlayer player)
 		{
+			if(target == null || player == null) return null;
 			if(CanLootPl) return null;
 			if(CheckHelper(player, target as BaseEntity)) return null;
 			if(IsFriend(target.userID, player.userID)) return null;
@@ -259,6 +262,7 @@ namespace Oxide.Plugins
 		}		
 		private object CanLootEntity(BasePlayer player, StorageContainer container)
 		{
+			if(container == null || player == null) return null;
 			if(CanLootEnt) return null;
 			BaseEntity entity = container as BaseEntity;
 			if(CheckHelper(player, entity)) return null;
@@ -295,6 +299,7 @@ namespace Oxide.Plugins
 		}	
 		private object OnOvenToggle(BaseOven oven, BasePlayer player)
 		{
+			if(oven == null || player == null) return null;
 			if(CanOvenToggle) return null;
 			BaseEntity entity = oven as BaseEntity;
 			if(CheckHelper(player, entity)) return null;
@@ -310,6 +315,7 @@ namespace Oxide.Plugins
 		}
 		private object CanPickupEntity(BasePlayer player, BaseCombatEntity ent)
 		{
+			if(ent == null || player == null) return null;
 			if(CanPickup) return null;
 			BaseEntity entity = ent as BaseEntity;
 			if(CheckHelper(player, entity)) return null;
