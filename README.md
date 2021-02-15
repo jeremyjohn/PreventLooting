@@ -57,7 +57,7 @@ If you want to share an entity with other players, you can use chat commands. To
 
 **UseCupboard** - enable to share entities if cupboard authorization, in cupboard radius
 
-**UseCupboardInclude** - list of types to loot with parameter UseCupboard. Types available: storage, pickup, player, corpse, backpack, backpackplugin. The default value is recommended. Note: with "UseCupboardInclude" values: player, corpse, backpack, backpackplugin - allowing loot only when both player auth in cupboard!
+**UseCupboardInclude** - list of types to loot with parameter UseCupboard. Types available: storage, pickup, player, corpse, backpack, backpackplugin. The default value is recommended. Note: with "UseCupboardInclude" values: storage, player, corpse, backpack, backpackplugin - allowing loot only when both player auth in cupboard!
 
 **UseOnlyInCupboardRange** - enable to use the plugin only in the coverage area of cupboard
 
