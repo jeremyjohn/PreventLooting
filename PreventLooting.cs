@@ -238,24 +238,49 @@ namespace Oxide.Plugins
 			if(permission.UserHasPermission(player.userID.ToString(), AdmPerm)) return true;
 			if(UseZoneManager && ZoneManager != null)
 			{
-				if((string[])ZoneManager.Call("GetPlayerZoneIDs", player) != null)
-				{					
-					if(!IncludeZoneMode)
-					{					
+				string[] playerzones = (string[])ZoneManager.Call("GetPlayerZoneIDs", player);
+				if(playerzones != null)
+				{
+                    if(!IncludeZoneMode)
+                    {
 						foreach(var zoneID in ZoneID)
 						{
-							if((bool)ZoneManager.Call("isPlayerInZone", zoneID, player)) return true;				
+							if((bool)ZoneManager.Call("isPlayerInZone", zoneID, player)) 
+							{
+								return true;
+							}
+							else
+							{
+								foreach (string pzone in playerzones)
+								{
+									if((string)zoneID == (string)ZoneManager.Call("GetZoneName", pzone)) {
+										if((bool)ZoneManager.Call("isPlayerInZone", pzone, player)) return true;
+									};
+								}
+							}
 						}
-					}
+                    }
 					else
 					{
 						foreach(var zoneID in ZoneID)
 						{
-							if((bool)ZoneManager.Call("isPlayerInZone", zoneID, player)) return false;				
-						}		
+							if((bool)ZoneManager.Call("isPlayerInZone", zoneID, player)) 
+							{
+								return false;
+							}
+							else
+							{
+								foreach (string pzone in playerzones)
+								{
+									if((string)zoneID == (string)ZoneManager.Call("GetZoneName", pzone)) {
+										if((bool)ZoneManager.Call("isPlayerInZone", pzone, player)) return false;
+									};
+								}
+							}
+						}
 						return true;
 					}
-				}				
+				}
 			}
 			if(entity is SupplyDrop) return true;
 			return false;
