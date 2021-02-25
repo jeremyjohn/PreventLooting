@@ -253,7 +253,8 @@ namespace Oxide.Plugins
 							{
 								foreach (string pzone in playerzones)
 								{
-									if((string)zoneID == (string)ZoneManager.Call("GetZoneName", pzone)) {
+									if((string)zoneID == (string)ZoneManager.Call("GetZoneName", pzone))
+									{
 										if((bool)ZoneManager.Call("isPlayerInZone", pzone, player)) return true;
 									};
 								}
@@ -272,7 +273,8 @@ namespace Oxide.Plugins
 							{
 								foreach (string pzone in playerzones)
 								{
-									if((string)zoneID == (string)ZoneManager.Call("GetZoneName", pzone)) {
+									if((string)zoneID == (string)ZoneManager.Call("GetZoneName", pzone))
+									{
 										if((bool)ZoneManager.Call("isPlayerInZone", pzone, player)) return false;
 									};
 								}
